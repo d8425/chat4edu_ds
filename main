@@ -1,0 +1,20 @@
+# main
+import root
+
+if __name__ == "__main__":
+    print(
+        r"目前支持聊天/询问/PDF文档总结转为PPT/试卷-书本拍摄转word，请输入格式：'q:*****'为询问问题，输入格式:'f:D:\****\****\***.pdf'为选择pdf并总结为PPT，输入格式:'o:D:\****\****\***.jpg/png'为识别试卷等转word")
+    while True:
+        user_input = input("\n请输入：")
+        # os.system("pause")
+        with open('./key.txt','r',encoding='utf-8') as file:
+            for line in file:
+                key = line
+        if user_input[0]=='f':
+            root.file_process(user_input[2:],key)
+        elif user_input[0]=='q':
+            root.chat_process(user_input[2:],key)
+        elif user_input[0]=='o':
+            root.OCR_process(user_input[2:], key)
+        else:
+            print('输入格式异常，请确认输入格式')
