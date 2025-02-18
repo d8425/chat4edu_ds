@@ -1,0 +1,24 @@
+from paddleocr import PaddleOCR
+from docx import Document
+import time
+
+def img2OCR(image_path):
+    # paddleOCR
+    ocr = PaddleOCR(use_angle_cls=True, lang='ch')  # 使用中文模型
+    result = ocr.ocr(image_path, cls=True)
+    content = []
+    for line in range(len(result[0])):
+        print(line)
+        content.append(result[0][line][1][0])
+
+    return content
+
+def OCR2doc(content):
+    # saving
+    doc = Document()
+    for text in content:
+        doc.add_paragraph(text)
+    time_now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+    output_path = f"./Multi_Paragraphs_Output {time_now}.docx"
+
+    doc.save(output_path)
