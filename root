@@ -1,0 +1,53 @@
+import pdf_in
+from openai import OpenAI
+import data2ppt
+import img2doc
+
+# if out-file get in
+
+def file_process(file_path,key):
+    client = OpenAI(api_key=key,
+                    base_url='https://tbnx.plus7.plus/v1')
+    filename = file_path
+    file_content = pdf_in.PDF2DOC(filename)
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for Document organization"},
+            {"role": "user", "content": f"使用中文帮我整理文档的核心要点，并分段进行序号汇总，每个段落将被放入ppt的一页，将每个带序号的段落内容之间用'-*-'分隔。文档内容如下：{file_content}"},
+        ],
+        stream=False
+    )
+    print(response.choices[0].message.content)
+    data2ppt.string2ppt(response.choices[0].message.content)
+
+def chat_process(content,key):
+    client = OpenAI(api_key=key,
+                    base_url='https://tbnx.plus7.plus/v1')
+    response = client.chat.completions.create(
+        model="deepseek-reasoner",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for teachers' daily works and questions"},
+            {"role": "user", "content": content},
+        ],
+        stream=False
+    )
+    print(response.choices[0].message.content)
+
+def OCR_process(image_path,key):
+    content = img2doc.img2OCR(image_path)
+
+    client = OpenAI(api_key=key,
+                    base_url='https://tbnx.plus7.plus/v1')
+    response = client.chat.completions.create(
+        model="deepseek-chat",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant for translating documents/papers and provide answers to the questions in them"},
+            {"role": "user", "content": f"使用中文帮我思考获取文档中问题的答案，并将答案提供出来，附上简短思考过程，每个问题50字内。文档内容如下：{content}"},
+        ],
+        stream=False
+    )
+    print(response.choices[0].message.content)
+    content.append(response.choices[0].message.content)
+    img2doc.OCR2doc(content)
+    print('OCR_process')
