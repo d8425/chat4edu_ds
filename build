@@ -1,0 +1,1 @@
+pyinstaller --onefile --collect-all=paddleocr --collect-all=paddle --collect-all=shapely --collect-all=pyclipper  ChatInterface.py
