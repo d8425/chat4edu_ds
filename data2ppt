@@ -1,0 +1,66 @@
+from pptx import Presentation
+from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches, Pt
+import time
+
+def _create_ppt_with_multiple_paragraphs(paragraphs, output_path):
+    prs = Presentation()
+    slide_layout = prs.slide_layouts[1]
+
+    for para in paragraphs:
+        # 删除字符串前 4 个字符
+        para = para[4:]
+        # 为每段内容添加一张新幻灯片
+        slide = prs.slides.add_slide(slide_layout)
+
+        # 获取标题占位符并设置标题
+        title_placeholder = slide.shapes.title
+        # 调整标题占位符的位置和大小
+        title_placeholder.left = Inches(0.2)
+        title_placeholder.top = Inches(0.2)
+        title_placeholder.width = Inches(3)
+        title_placeholder.height = Inches(0.5)
+
+        title_placeholder.text = "内容展示"
+
+        title_para = title_placeholder.text_frame.paragraphs[0]
+        title_para.font.size = Pt(20)
+        title_para.alignment = PP_ALIGN.LEFT
+
+        # 获取内容占位符
+        content = slide.placeholders[1]
+        # 调整位置
+        content.left = Inches(0.2)  # 距离幻灯片左侧的距离
+        content.top = Inches(0.2)  # 距离幻灯片顶部的距离
+        content.width = Inches(3)  # 内容占位符的宽度
+        content.height = Inches(0.5)  # 内容占位符的高度
+
+        tf = content.text_frame
+        # 清空默认内容
+        tf.clear()
+
+        # 添加段落
+        p = tf.add_paragraph()
+        p.text = para
+        p.alignment = PP_ALIGN.LEFT
+        p.font.size = Pt(18)
+        p.font.bold = False
+
+        # 确保段落样式应用
+        for run in p.runs:
+            run.font.size = Pt(18)
+            run.font.bold = False
+
+    # 保存 PPT 文件
+    prs.save(output_path)
+
+def string2ppt(content):
+    # 对内容进行切分
+    contentSub = content.split('-*-')
+
+    paragraphs = contentSub
+
+    time_now = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
+    output_path = f"./Multi_Paragraphs_Output {time_now}.pptx"
+
+    _create_ppt_with_multiple_paragraphs(paragraphs, output_path)
